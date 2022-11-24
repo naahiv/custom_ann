@@ -12,7 +12,7 @@ class ActivationFunction:
         self.d_func = np.vectorize(d_func)
 
     def apply(self, arr):
-        assert isinstance(arr, np.ndarry)
+        assert isinstance(arr, np.ndarray)
         return self.func(arr)
 
     def apply_d(self, arr_val, *, pure=False):
@@ -21,7 +21,7 @@ class ActivationFunction:
         original activation function. If the direct derivative is necessary, then one
         can supply pure=True
         """
-        assert isinstance(arr_val, np.ndarry)
+        assert isinstance(arr_val, np.ndarray)
         if pure: # remove if this check is slow and delegate to other function
             return self.d_func(self.func(arr_val))
         else:
