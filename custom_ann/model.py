@@ -1,6 +1,7 @@
 import numpy as np
 
 from layer import Layer, InputLayer, HiddenLayer, OutputLayer
+from training import SGDBackpropogation
 
 class Network:
     """
@@ -52,6 +53,9 @@ class Network:
         """
         The output (possibly a vector) for a given set of input neurons. This can be
         computed once the network is initialized.
+
+        NOTE: this is a 'destructive' function - the model's neurons are all activated
+        afterwards.
         """
         assert self.status == 3
         assert inp_vec.shape == (self.input_size,)
@@ -60,3 +64,34 @@ class Network:
         for layer in self.layers[1:]:
             layer.compute()
         return self.layers[-1].get_neurons()
+
+    def adjust_parameters(self, adjustment_list):
+        """
+        Takes in a list of adjustments to the weights and biases in each layer
+        """
+        assert len(adjustment_list) == len(self.layers) - 1
+        for (i, layer) in enumerate(self.layers)[1:]:
+            layer.adjust_weights(adjustment_list[i][0])
+            layer.adjust_biases(adjustment_list[i][1])
+
+    def compute_loss(self, inp_vec, target_out):
+        """
+        Computes the loss function (SE) for one training example. No regularization is
+        included in this (L1 or L2).
+        """
+        assert target_out.shape == (self.output_size,)
+        return ( target_out - self.output(inp_vec) )**2
+
+    def compute_batch_MSE(self, inputs, targets):
+        """
+        Computes the overall model loss for a set of training examples.
+        It computes the average MSE for each example.
+        """
+        total = 0.0
+        for (x, y) in zip(inputs, targets):
+            total += self.compute_loss(x, y) / self.output_size
+        return total / len(inputs)
+
+    def train(self, *args, **kwargs):
+        SGDBackpropogation.train(self, *args, **kwargs)
+

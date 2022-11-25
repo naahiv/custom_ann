@@ -58,6 +58,14 @@ class HiddenLayer(Layer):
         else:
             raise Exception("Previous layer has not been computed yet!")
 
+    def adjust_weights(self, adj_matrix):
+        assert adj_matrix.shape == self.weight_matrix.shape
+        self.weight_matrix += adj_matrix
+
+    def adjust_biases(self, adj_vec):
+        assert adj_vec.shape == self.bias_vector.shape
+        self.bias_vector += adj_vec
+
 class OutputLayer(HiddenLayer):
     """
     An output layer needs similar initialization as a Hidden layer, except that its activation function is defaulted
